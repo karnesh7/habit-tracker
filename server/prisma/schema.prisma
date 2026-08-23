@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  timezone     String   @default("UTC") // IANA Timezone string e.g. "Asia/Kolkata"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  habits Habit[]
+}
+
+model Habit {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  checkIns CheckIn[]
+}
+
+model CheckIn {
+  id           String   @id @default(uuid())
+  habitId      String
+  habit        Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  utcTimestamp DateTime // Instant of check-in in UTC
+  localDate    String   // Local calendar day string: "YYYY-MM-DD"
+  createdAt    DateTime @default(now())
+
+  // Database-level enforcement of one check-in per local day per habit
+  @@unique([habitId, localDate])
+}

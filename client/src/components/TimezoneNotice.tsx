@@ -27,7 +27,7 @@ export const TimezoneNotice: React.FC<{ timezone: string }> = ({ timezone }) => 
           onClick={() => setExpanded(!expanded)}
           className="text-xs text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 transition-colors"
         >
-          {expanded ? 'Hide Details' : 'Interview Deep-Dive'}
+          {expanded ? 'Hide Details' : 'How it works'}
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
       </div>

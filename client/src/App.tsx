@@ -7,7 +7,6 @@ import { HabitCard } from './components/HabitCard.js';
 import { CreateHabitModal } from './components/CreateHabitModal.js';
 import { BackfillModal } from './components/BackfillModal.js';
 import { HabitHistoryModal } from './components/HabitHistoryModal.js';
-import { TimezoneNotice } from './components/TimezoneNotice.js';
 import { Plus, Flame, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export function App() {
@@ -150,8 +149,6 @@ export function App() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <TimezoneNotice timezone={user.timezone} />
-
         {/* Header Actions */}
         <div className="flex items-center justify-between mb-8">
           <div>

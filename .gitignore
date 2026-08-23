@@ -1,0 +1,25 @@
+# Learning Notes (ignored for git commits as requested)
+notes/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Environment & local config
+.env
+.env.local
+.env.*.local
+
+# SQLite database files
+*.db
+*.db-journal
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

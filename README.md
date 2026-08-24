@@ -1,6 +1,6 @@
 # Timezone-Aware Habit Tracker with Streaks
 
-A fullstack Habit Tracker application engineered to demonstrate production-grade **timezone-aware local-day check-in enforcement** and **server-side streak calculation**.
+A fullstack Habit Tracker application engineered to demonstrate production-grade **timezone-aware local-day check-in enforcement**, **server-side streak calculation**, and **containerized deployment**.
 
 ---
 
@@ -10,7 +10,8 @@ A fullstack Habit Tracker application engineered to demonstrate production-grade
 2. **Database-Level Enforcement**: Uses a compound unique constraint `@@unique([habitId, localDate])` in Prisma (SQLite / MySQL) to guarantee at the storage layer that only one check-in per local day per habit can ever be written.
 3. **Server-Side Streaks**: `currentStreak` and `longestStreak` are computed exclusively on the server. The client never determines streak state.
 4. **Backfilling Support**: Users can log past local dates. Backfilling automatically re-evaluates streak calculations.
-5. **Modern Glassmorphic UI**: React 19 SPA with Tailwind CSS, Lucide icons, streak flame indicators, and interactive timezone notice banners.
+5. **Modern Glassmorphic UI**: React 19 SPA with Tailwind CSS, Lucide icons, and streak flame indicators.
+6. **Docker Containerization**: Full multi-container Docker Compose setup for instant deployment.
 
 ---
 
@@ -19,35 +20,37 @@ A fullstack Habit Tracker application engineered to demonstrate production-grade
 - **Backend**: Node.js, Express, TypeScript, Prisma ORM, Luxon (timezone conversions), Zod (input validation), JWT Auth, bcryptjs, Vitest.
 - **Frontend**: Vite, React 19, TypeScript, Tailwind CSS, Lucide React icons.
 - **Database**: SQLite (zero-config local dev) / MySQL.
+- **Containerization**: Docker, Docker Compose (`node:20-alpine`).
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start Options
 
-### 1. Prerequisites
-- Node.js (v18+)
-- npm (v9+)
+### Option A: Running with Docker Compose (Recommended)
 
-### 2. Installation
+Run the entire fullstack application (Backend API on port `5000` + Frontend SPA on port `3000`) with one command:
+
+```bash
+docker compose up --build
+```
+
+---
+
+### Option B: Running Locally with Node.js & npm
+
+#### 1. Installation
 From the root directory, install all dependencies:
 ```bash
-# Install root, server, and client dependencies
 npm run install:all
 ```
 
-Or install individually:
-```bash
-cd server && npm install
-cd ../client && npm install
-```
-
-### 3. Database Initialization
+#### 2. Database Initialization
 ```bash
 cd server
 npx prisma db push
 ```
 
-### 4. Running Dev Servers
+#### 3. Running Dev Servers
 To run backend REST API (runs on `http://localhost:5000`):
 ```bash
 npm run dev:server

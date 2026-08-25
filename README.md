@@ -125,3 +125,4 @@ The backend test suite includes Vitest unit tests validating local-day timezone 
 cd server
 npm run test
 ```
+---

@@ -10,10 +10,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Set default environment variables for build/runtime
+ENV DATABASE_URL="file:./dev.db"
+ENV PORT=5000
+ENV NODE_ENV=development
+
 # Copy Prisma schema and generate Prisma Client
 COPY prisma ./prisma/
 RUN npx prisma generate
-RUN npx prisma db push
 
 # Copy remaining backend source code
 COPY . .
@@ -21,9 +25,5 @@ COPY . .
 # Expose port 5000
 EXPOSE 5000
 
-# Set environment variables for container
-ENV PORT=5000
-ENV NODE_ENV=development
-
-# Start backend dev server
-CMD ["npm", "run", "dev"]
+# Push database schema on startup and launch backend server
+CMD ["sh", "-c", "npx prisma db push && npm run dev"]

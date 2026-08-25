@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend Express REST API Service
   backend:
@@ -25,5 +23,7 @@ services:
     container_name: habit_tracker_frontend
     ports:
       - "3000:3000"
+    environment:
+      - VITE_API_PROXY_TARGET=http://backend:5000
     depends_on:
       - backend

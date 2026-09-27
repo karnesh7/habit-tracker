@@ -125,3 +125,59 @@ The backend test suite includes Vitest unit tests validating local-day timezone 
 cd server
 npm run test
 ```
+
+---
+
+## 📊 Performance Benchmarks
+
+A pure-logic benchmark suite (`server/src/utils/benchmark.ts`) measures the performance of all critical server-side utilities — **no running server or database required**.
+
+### Running the Benchmarks
+
+```bash
+cd server
+npx tsx src/utils/benchmark.ts
+```
+
+Results are saved automatically to `benchmark-results.json` in the project root.
+
+### What Is Measured
+
+| Section | Benchmarks |
+|---|---|
+| **1 · Timezone Utilities** | `getLocalDateString`, `getTodayLocalDateString`, `diffInDays`, `isValidTimezone` |
+| **2 · Streak Calculator (consecutive)** | Dataset sizes: 10 / 50 / 100 / 365 / 730 / 1000 days |
+| **3 · Streak Calculator (sparse)** | Gapped datasets (every 3rd day): 50 / 200 / 500 entries |
+| **4 · Duplicate Guard** | `Set.has()` lookup — 409 conflict path vs 201 success path |
+| **5 · Full Pipeline** | UTC → local date conversion + streak recalculation combined |
+
+### Results (Node v24.11.1 · win32 x64 · `Asia/Kolkata`)
+
+| Benchmark | Avg (ms) | p95 (ms) | Ops/sec |
+|---|---|---|---|
+| `getLocalDateString` (UTC string) | 0.0226 | 0.0476 | 44,330 |
+| `getLocalDateString` (Date object) | 0.0214 | 0.0661 | 46,624 |
+| `getTodayLocalDateString` | 0.0200 | 0.0749 | 49,887 |
+| `diffInDays` (consecutive days) | 0.0454 | 0.1250 | 22,006 |
+| `diffInDays` (cross-month boundary) | 0.0334 | 0.0701 | 29,927 |
+| `isValidTimezone` (valid IANA zone) | 0.1475 | 0.4918 | 6,782 |
+| `isValidTimezone` (invalid string) | 0.0897 | 0.2451 | 11,152 |
+| `calculateStreaks` (10 days) | 0.2781 | 0.5012 | 3,596 |
+| `calculateStreaks` (50 days) | 1.5138 | 2.4105 | 661 |
+| `calculateStreaks` (100 days) | 3.1542 | 4.7141 | 317 |
+| `calculateStreaks` (365 days) | 10.8351 | 13.1738 | 92 |
+| `calculateStreaks` (730 days) | 22.1803 | 31.0446 | 45 |
+| `calculateStreaks` (1000 days) | 29.7768 | 33.9253 | 34 |
+| `calculateStreaks` (50 sparse) | 1.6421 | 3.1889 | 609 |
+| `calculateStreaks` (200 sparse) | 5.5728 | 7.4335 | 179 |
+| `calculateStreaks` (500 sparse) | 13.1315 | 16.4089 | 76 |
+| Duplicate guard `Set.has()` (409 path) | 0.000209 | 0.0003 | 4,774,409 |
+| Duplicate guard `Set.has()` (201 path) | 0.000202 | 0.0003 | 4,939,247 |
+| **Full check-in pipeline (30-day history)** | **0.9469** | **1.5615** | **1,056** |
+
+### Key Takeaways
+
+- **Timezone conversion is extremely fast** (~0.02ms, ~45k ops/sec) — adds negligible overhead per request.
+- **Streak calculation is O(n)** — scales linearly with check-in history size. Real users rarely exceed 365 entries.
+- **Duplicate guard is essentially free** (~4.8M ops/sec) — the `Set.has()` in-memory check adds zero measurable latency.
+- **A complete check-in request costs ~1ms of pure logic** (timezone conversion + streak recalculation on a 30-day history), making the server-side logic well within real-time response budgets.

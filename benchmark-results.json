@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "runAt": "2026-09-27T16:22:00.000Z",
+    "node": "v24.11.1",
+    "platform": "win32",
+    "arch": "x64",
+    "timezone": "Asia/Kolkata",
+    "defaultIterations": 10000
+  },
+  "benchmarks": [
+    { "name": "getLocalDateString (UTC string to local date)", "iterations": 10000, "totalMs": 225.58, "avgMs": 0.022558, "minMs": 0.0142, "maxMs": 1.5473, "opsPerSec": 44330.35, "p95Ms": 0.0476, "notes": "Simulates converting a check-in UTC timestamp to local calendar date" },
+    { "name": "getLocalDateString (Date object to local date)", "iterations": 10000, "totalMs": 214.48, "avgMs": 0.021448, "minMs": 0.0171, "maxMs": 41.4724, "opsPerSec": 46624.15, "p95Ms": 0.0661, "notes": "Simulates real-time check-in (Date object path)" },
+    { "name": "getTodayLocalDateString", "iterations": 10000, "totalMs": 200.45, "avgMs": 0.020045, "minMs": 0.0159, "maxMs": 13.3259, "opsPerSec": 49886.96, "p95Ms": 0.0749, "notes": "Called on every check-in to resolve today in the users timezone" },
+    { "name": "diffInDays (consecutive days)", "iterations": 10000, "totalMs": 454.42, "avgMs": 0.045442, "minMs": 0.0239, "maxMs": 1.9468, "opsPerSec": 22005.99, "p95Ms": 0.125, "notes": "Core diff used inside the streak loop" },
+    { "name": "diffInDays (cross-month boundary)", "iterations": 10000, "totalMs": 334.15, "avgMs": 0.033415, "minMs": 0.0232, "maxMs": 7.158, "opsPerSec": 29926.69, "p95Ms": 0.0701, "notes": "Verifies cross-month boundaries are handled correctly" },
+    { "name": "isValidTimezone (valid IANA zone)", "iterations": 10000, "totalMs": 1474.51, "avgMs": 0.147451, "minMs": 0.1127, "maxMs": 12.9081, "opsPerSec": 6781.9, "p95Ms": 0.4918, "notes": "Runs on every auth-guarded request to validate user timezone" },
+    { "name": "isValidTimezone (invalid garbage string)", "iterations": 10000, "totalMs": 896.68, "avgMs": 0.089668, "minMs": 0.0784, "maxMs": 14.2438, "opsPerSec": 11152.2, "p95Ms": 0.2451, "notes": "Worst-case path - unknown zone" },
+    { "name": "calculateStreaks (10 consecutive days)", "iterations": 10000, "totalMs": 2780.92, "avgMs": 0.278092, "minMs": 0.1867, "maxMs": 2.2851, "opsPerSec": 3595.93, "p95Ms": 0.5012, "notes": "10-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (50 consecutive days)", "iterations": 10000, "totalMs": 15137.83, "avgMs": 1.513783, "minMs": 1.0094, "maxMs": 19.6181, "opsPerSec": 660.6, "p95Ms": 2.4105, "notes": "50-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (100 consecutive days)", "iterations": 10000, "totalMs": 31541.61, "avgMs": 3.154161, "minMs": 2.0881, "maxMs": 173.4782, "opsPerSec": 317.04, "p95Ms": 4.7141, "notes": "100-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (365 consecutive days)", "iterations": 200, "totalMs": 2167.03, "avgMs": 10.835129, "minMs": 8.5677, "maxMs": 19.1268, "opsPerSec": 92.29, "p95Ms": 13.1738, "notes": "365-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (730 consecutive days)", "iterations": 100, "totalMs": 2218.03, "avgMs": 22.180298, "minMs": 19.1088, "maxMs": 34.5878, "opsPerSec": 45.09, "p95Ms": 31.0446, "notes": "730-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (1000 consecutive days)", "iterations": 50, "totalMs": 1488.84, "avgMs": 29.776804, "minMs": 24.6994, "maxMs": 37.6634, "opsPerSec": 33.58, "p95Ms": 33.9253, "notes": "1000-day full-consecutive streak, referenceToday = last date" },
+    { "name": "calculateStreaks (50 sparse gapped dates)", "iterations": 10000, "totalMs": 16421.32, "avgMs": 1.642132, "minMs": 0.8949, "maxMs": 59.2701, "opsPerSec": 608.96, "p95Ms": 3.1889, "notes": "Every 3rd day only - lots of streak resets, worst-case for loop" },
+    { "name": "calculateStreaks (200 sparse gapped dates)", "iterations": 2000, "totalMs": 11145.68, "avgMs": 5.57284, "minMs": 3.8235, "maxMs": 116.52, "opsPerSec": 179.44, "p95Ms": 7.4335, "notes": "Every 3rd day only - lots of streak resets, worst-case for loop" },
+    { "name": "calculateStreaks (500 sparse gapped dates)", "iterations": 500, "totalMs": 6565.76, "avgMs": 13.131519, "minMs": 10.3785, "maxMs": 22.8745, "opsPerSec": 76.15, "p95Ms": 16.4089, "notes": "Every 3rd day only - lots of streak resets, worst-case for loop" },
+    { "name": "Duplicate guard Set.has() on existing date (409 path)", "iterations": 10000, "totalMs": 2.09, "avgMs": 0.000209, "minMs": 0.0001, "maxMs": 0.0508, "opsPerSec": 4774409.15, "p95Ms": 0.0003, "notes": "Simulates the duplicate detection that triggers HTTP 409" },
+    { "name": "Duplicate guard Set.has() on new date (201 path)", "iterations": 10000, "totalMs": 2.02, "avgMs": 0.000202, "minMs": 0.0001, "maxMs": 0.0382, "opsPerSec": 4939247.29, "p95Ms": 0.0003, "notes": "Simulates the happy-path new check-in lookup" },
+    { "name": "Full check-in pipeline (UTC to localDate + streak calc, 30-day history)", "iterations": 10000, "totalMs": 9469.02, "avgMs": 0.946902, "minMs": 0.6302, "maxMs": 15.272, "opsPerSec": 1056.08, "p95Ms": 1.5615, "notes": "Combines timezone conversion + streak recalculation as done on each check-in" }
+  ]
+}

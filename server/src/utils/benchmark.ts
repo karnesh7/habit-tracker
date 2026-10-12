@@ -20,8 +20,7 @@
  */
 
 import { writeFileSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import {
   getLocalDateString,
   getTodayLocalDateString,
@@ -31,9 +30,6 @@ import {
 import { calculateStreaks } from './streakCalculator.js';
 
 // ─── Helpers ────────────────────────────────────────────────
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /** High-resolution timer in milliseconds */
 function hrMs(): number {

@@ -15,11 +15,11 @@
  *    cd server
  *    npx tsx src/utils/benchmark.ts
  *
- *  Results are written to: benchmark-results.json (project root)
+ *  Results are written to: server/benchmarks/benchmark-results.json
  * ============================================================
  */
 
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import {
@@ -341,10 +341,12 @@ const output = {
   benchmarks: results,
 };
 
-// Save alongside the project root
-const outPath = join(__dirname, '../../../../benchmark-results.json');
+// Save into server/benchmarks/ subfolder
+const outDir = join(__dirname, '../../benchmarks');
+mkdirSync(outDir, { recursive: true });
+const outPath = join(outDir, 'benchmark-results.json');
 writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf-8');
 
 console.log('');
-console.log(`  💾  Results saved → benchmark-results.json (project root)`);
+console.log(`  💾  Results saved → server/benchmarks/benchmark-results.json`);
 console.log('');

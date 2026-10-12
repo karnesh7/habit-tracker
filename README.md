@@ -139,7 +139,7 @@ cd server
 npx tsx src/utils/benchmark.ts
 ```
 
-Results are saved automatically to `benchmark-results.json` in the project root.
+Results are saved automatically to `server/benchmarks/benchmark-results.json`.
 
 ### What Is Measured
 

@@ -75,7 +75,7 @@ A full-stack habit tracking engine built with React 19, Express.js, TypeScript, 
 | **Duplicate Guard Pre-Check** | **`0.0002 ms`** (~4.8M ops/s) | Sub-microsecond hash check eliminates unnecessary database write attempts |
 | **Streak Engine (365-Day History)** | **`10.835 ms`** (p95: 13.17 ms) | Linear $\mathcal{O}(N)$ scan recalculates year-long streaks without Redis caching |
 | **Storage Concurrency Rejection** | **`100% atomic rejection`** | B-Tree unique constraint completely prevents duplicate check-in writes |
-| **Automated Test Suite** | **`13 tests passing (0.28s)`**| 100% pass rate validating leap years, cross-month boundaries, and streaks |
+| **Automated Test Suite** | **`5 tests passing (~0.18s)`**| 100% pass rate validating timezone conversions, yesterday buffer, and streaks |
 
 ---
 
@@ -117,7 +117,7 @@ A full-stack habit tracking engine built with React 19, Express.js, TypeScript, 
 │   model CheckIn {                                                      │
 │     id           String   @id @default(uuid())                         │
 │     habitId      String                                                │
-│     utcTimestamp DateTime @default(now())   // Audit ordering          │
+│     utcTimestamp DateTime                   // Instant of check-in UTC │
 │     localDate    String                     // YYYY-MM-DD string       │
 │                                                                        │
 │     @@unique([habitId, localDate]) ◄── B-Tree index guarantees atomicity│
@@ -126,7 +126,7 @@ A full-stack habit tracking engine built with React 19, Express.js, TypeScript, 
 ```
 
 1. **Ingress & Auth:** Request hits `POST /api/habits/:id/check-in` with a Bearer JWT containing the user's verified IANA timezone.
-2. **Local Date Resolution:** Server derives `localDate = getLocalDate(new Date(), user.timezone)` using Luxon in sub-0.03ms.
+2. **Local Date Resolution:** Server derives `localDate = getLocalDateString(new Date(), user.timezone)` using Luxon in sub-0.03ms.
 3. **Dual-Layer Concurrency Defense:** Fast in-memory check verifies if `localDate` exists. If concurrent requests collide, the `@@unique([habitId, localDate])` B-Tree index rejects the second write with Prisma error `P2002` (HTTP 409 Conflict).
 4. **Streak Recalculation & Delivery:** Server fetches habit check-in dates, executes `calculateStreaks()`, and delivers updated counters to the client in under 1ms.
 
@@ -223,7 +223,7 @@ cd ..
 
 ### Testing & Verification
 ```bash
-# Run automated Vitest test suite (13 tests verifying leap years & streak logic)
+# Run automated Vitest test suite (5 tests verifying timezone & streak logic)
 npm run test:server         # or: cd server && npm test
 
 # Run empirical latency and linear streak calculation benchmarks
@@ -243,7 +243,7 @@ All habit endpoints require an `Authorization: Bearer <token>` header.
 | `GET` | `/api/habits` | List all habits with calculated streaks | None |
 | `POST` | `/api/habits` | Create a new tracked habit | `{ name, description? }` |
 | `GET` | `/api/habits/:id` | Get single habit details & history | None |
-| `POST` | `/api/habits/:id/check-in` | Log check-in (supports backfilling) | `{ date?: "YYYY-MM-DD" }` |
+| `POST` | `/api/habits/:id/check-in` | Log check-in (supports backfilling) | `{ date?: "YYYY-MM-DD", timestamp?: string }` |
 | `DELETE`| `/api/habits/:id` | Delete habit and cascade check-ins | None |
 
 ### Alternative: Docker Compose Launch
